@@ -32,8 +32,8 @@ class UserProfile(BaseTable):
 
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     leetcode: Mapped[str] = mapped_column(String(100), nullable=True)
-    github: Mapped[str] = mapped_column(String(100), nullable=False)
-    linkedin: Mapped[str | None] = mapped_column(String(255), nullable=False)
+    github: Mapped[str] = mapped_column(String(100), nullable=True)
+    linkedin: Mapped[str | None] = mapped_column(String(255), nullable=True)
     photo: Mapped[str | None] = mapped_column(String(255), nullable=True)
     bio: Mapped[str | None] = mapped_column(Text, nullable=True)
 
