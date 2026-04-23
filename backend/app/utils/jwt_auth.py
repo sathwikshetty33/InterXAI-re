@@ -12,7 +12,7 @@ from app.exceptions.auth import (
 )
 from app.interfaces.authenticator import Authenticator
 from app.interfaces.hasher import Hasher
-from app.models.user import User
+from app.models.user import User, UserProfile
 from app.utils.bcrypt_hasher import BcryptHasher
 from app.utils.jwt_encrypter import JWTEncrypter
 
@@ -28,6 +28,7 @@ class JwtAuth(Authenticator):
         self.hasher: Hasher = BcryptHasher(rounds=12)
 
     async def create_user(self, username: str, password: str, email: str) -> User:
+
         existing_user = await self.db_session.execute(select(User).where(User.username == username))
         if existing_user.scalar_one_or_none():
             raise UserAlreadyExistsError(username)
@@ -37,14 +38,24 @@ class JwtAuth(Authenticator):
             raise EmailAlreadyExistsError(email)
 
         hashed_password = self.hasher.hash(password)
+
         user = User(
             username=username,
             email=email,
             password_hash=hashed_password,
         )
+
         self.db_session.add(user)
+
+        await self.db_session.flush()
+
+        profile = UserProfile(user_id=user.id)
+        self.db_session.add(profile)
+
         await self.db_session.commit()
-        await self.db_session.refresh(user)
+
+        await self.db_session.refresh(user, attribute_names=["profile"])
+
         return user
 
     async def generate_token(self, user: User) -> str:
