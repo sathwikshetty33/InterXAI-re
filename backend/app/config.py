@@ -26,6 +26,9 @@ class Settings(BaseSettings):
     SUPABASE_KEY: str = ""
     SUPABASE_BUCKET_NAME: str = "resumes"
 
+    # Judge0 (code execution)
+    JUDGE0_API_URL: str = "http://localhost:2358"
+
     # Providers
     STORAGE_PROVIDER: str = "supabase"
     BACKGROUND_WORKER: str = "taskiq"
